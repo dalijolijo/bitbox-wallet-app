@@ -33,6 +33,7 @@ import (
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/coins/coin"
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/coins/eth"
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/coins/ltc"
+	"github.com/digitalbitbox/bitbox-wallet-app/backend/coins/btx"
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/config"
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/devices/device"
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/devices/usb"
@@ -55,6 +56,8 @@ const (
 	coinTBTC = "tbtc"
 	coinLTC  = "ltc"
 	coinTLTC = "tltc"
+	coinBTX = "btx"
+	coinTBTX = "tbtx"
 	coinETH  = "eth"
 	coinTETH = "teth"
 	coinRETH = "reth"
@@ -284,10 +287,10 @@ func (backend *Backend) defaultProdServers(code string) []*rpc.ServerInfo {
 		return backend.config.AppConfig().Backend.BTC.ElectrumServers
 	case coinTBTC:
 		return backend.config.AppConfig().Backend.TBTC.ElectrumServers
-	case coinLTC:
-		return backend.config.AppConfig().Backend.LTC.ElectrumServers
-	case coinTLTC:
-		return backend.config.AppConfig().Backend.TLTC.ElectrumServers
+	case coinBTX:
+                return backend.config.AppConfig().Backend.BTX.ElectrumServers
+        case coinTBTX:
+                return backend.config.AppConfig().Backend.TBTX.ElectrumServers
 	default:
 		panic(errp.Newf("The given code %s is unknown.", code))
 	}
@@ -342,6 +345,10 @@ O3nOxjgSfRAfKWQ2Ny1APKcn6I83P5PFLhtO5I12
 		return []*rpc.ServerInfo{{Server: "dev.shiftcrypto.ch:50004", TLS: true, PEMCert: devShiftCA}}
 	case coinTLTC:
 		return []*rpc.ServerInfo{{Server: "dev.shiftcrypto.ch:51004", TLS: true, PEMCert: devShiftCA}}
+	case coinBTX:
+                return []*rpc.ServerInfo{{Server: "dev.shiftcrypto.ch:50005", TLS: true, PEMCert: devShiftCA}}
+        case coinTBTX:
+                return []*rpc.ServerInfo{{Server: "dev.shiftcrypto.ch:51005", TLS: true, PEMCert: devShiftCA}}
 	default:
 		panic(errp.Newf("The given code %s is unknown.", code))
 	}
@@ -383,6 +390,14 @@ func (backend *Backend) Coin(code string) (coin.Coin, error) {
 		servers := backend.defaultElectrumXServers(code)
 		coin = btc.NewCoin(coinLTC, "LTC", &ltc.MainNetParams, dbFolder, servers,
 			"https://insight.litecore.io/tx/")
+	case coinTBTX:
+servers := backend.defaultElectrumXServers(code)
+               coin = btc.NewCoin(coinTBTX, "TBTX", &btx.TestNet4Params, dbFolder, servers,
+                        "http://insight.bitcore.cc/tx/")
+        case coinBTX:
+                servers := backend.defaultElectrumXServers(code)
+                coin = btc.NewCoin(coinBTX, "BTX", &btx.MainNetParams, dbFolder, servers,
+                        "https://insight.bitcore.cc/tx/")
 	case coinETH:
 		coin = eth.NewCoin(code, params.MainnetChainConfig,
 			"https://etherscan.io/tx/", backend.config.AppConfig().Backend.ETH.NodeURL)
@@ -436,6 +451,9 @@ func (backend *Backend) initAccounts() {
 			TLTC, _ := backend.Coin(coinTLTC)
 			backend.createAndAddAccount(TLTC, "tltc-multisig", "Litecoin Testnet", "m/48'/1'/0'",
 				signing.ScriptTypeP2PKH)
+			TBTX, _ := backend.Coin(coinTBTX)
+			backend.createAndAddAccount(TBTX, "tmtx-multisig", "Bitcore Testnet", "m/48'/1'/0'",
+				signing.ScriptTypeP2PKH)
 		case backend.arguments.Regtest():
 			RBTC, _ := backend.Coin("rbtc")
 			backend.createAndAddAccount(RBTC, "rbtc-p2pkh", "Bitcoin Regtest Legacy", "m/44'/1'/0'",
@@ -456,6 +474,10 @@ func (backend *Backend) initAccounts() {
 				signing.ScriptTypeP2WPKHP2SH)
 			backend.createAndAddAccount(TLTC, "tltc-p2wpkh", "Litecoin Testnet: bech32", "m/84'/1'/0'",
 				signing.ScriptTypeP2WPKH)
+
+			TBTX, _ := backend.Coin(coinTBTX)
+				backend.createAndAddAccount(TBTX, "tbtx-p2wpkh-p2sh", "Bitcore Testnet", "m/44'/1'/0'",
+				signing.ScriptTypeP2WPKHP2SH)
 
 			if backend.arguments.DevMode() {
 				TETH, _ := backend.Coin(coinTETH)
@@ -486,6 +508,14 @@ func (backend *Backend) initAccounts() {
 				signing.ScriptTypeP2WPKHP2SH)
 			backend.createAndAddAccount(LTC, "ltc-p2wpkh", "Litecoin: bech32", "m/84'/2'/0'",
 				signing.ScriptTypeP2WPKH)
+
+			BTX, _ := backend.Coin(coinBTX)
+			backend.createAndAddAccount(BTX, "btx-p2wpkh-p2sh", "Bitcore", "m/49'/160'/0'",
+				signing.ScriptTypeP2WPKHP2SH)
+			backend.createAndAddAccount(BTX, "btx-p2wpkh", "Bitcore: bech32", "m/84'/0'/0'",
+				signing.ScriptTypeP2WPKH)
+			backend.createAndAddAccount(BTX, "btx-p2pkh", "Bitcore Legacy", "m/44'/0'/0'",
+				signing.ScriptTypeP2PKH)
 
 			if backend.arguments.DevMode() {
 				ETH, _ := backend.Coin(coinETH)
