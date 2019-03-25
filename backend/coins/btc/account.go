@@ -33,6 +33,7 @@ import (
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/coins/btc/transactions"
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/coins/coin"
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/coins/ltc"
+	"github.com/digitalbitbox/bitbox-wallet-app/backend/coins/btx"
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/keystore"
 	"github.com/digitalbitbox/bitbox-wallet-app/backend/signing"
 	"github.com/digitalbitbox/bitbox-wallet-app/util/errp"
@@ -285,6 +286,10 @@ func XPubVersionForScriptType(coin *Coin, scriptType signing.ScriptType) [4]byte
 		return chaincfg.TestNet3Params.HDPublicKeyID
 	case ltc.TestNet4Params.Net:
 		return ltc.TestNet4Params.HDPublicKeyID
+	case btx.MainNetParams.Net:
+		return nil //TODO BTX
+	case btx.TestNet4Params.Net:
+		return nil //TODO BTX
 	default:
 		return chaincfg.MainNetParams.HDPublicKeyID
 	}

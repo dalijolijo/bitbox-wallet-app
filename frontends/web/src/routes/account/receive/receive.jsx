@@ -118,6 +118,21 @@ export default class Receive extends Component {
         }
     }
 
+    btxConvertToLegacy = () => {
+        const { receiveAddresses, activeIndex } = this.state;
+        if (receiveAddresses !== null && activeIndex !== null) {
+            apiPost('account/' + this.props.code + '/convert-to-legacy-address',
+                receiveAddresses[activeIndex].addressID)
+                .then(legacyAddress => {
+                    const address = receiveAddresses[activeIndex].address;
+                    this.unregisterEvents();
+                    alertUser(this.props.t('receive.btxLegacy.result', {
+                        address, legacyAddress
+                    }), this.registerEvents);
+                });
+        }
+    }
+
     getAccount() {
         if (!this.props.accounts) return undefined;
         return this.props.accounts.find(({ code }) => code === this.props.code);
@@ -139,6 +154,8 @@ export default class Receive extends Component {
         let uriPrefix = 'bitcoin:';
         if (account.coinCode === 'ltc' || account.coinCode === 'tltc') {
             uriPrefix = 'litecoin:';
+        } else if (coinCode === 'btx' || coinCode === 'tbtx') {
+            uriPrefix = 'bitcore:';
         } else if (account.coinCode === 'eth' || account.coinCode === 'teth' || account.coinCode === 'reth') {
             uriPrefix = '';
         }
@@ -181,6 +198,19 @@ export default class Receive extends Component {
                                 onClick={this.ltcConvertToLegacy}
                                 className={style.button}>
                                 {t('receive.ltcLegacy.button')}
+                            </Button>
+                        </div>
+                    )
+                }
+		{
+                    code === 'btx-p2wpkh-p2sh' && (
+                        <div>
+                            <p>{t('receive.btxLegacy.info')}</p>
+                            <Button
+                                primary
+                                onClick={this.btxConvertToLegacy}
+                                className={style.button}>
+                                {t('receive.btxLegacy.button')}
                             </Button>
                         </div>
                     )

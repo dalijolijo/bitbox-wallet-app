@@ -117,6 +117,26 @@ export default class Settings extends Component {
                                                     label={t('settings.accounts.litecoinP2WPKH')}
                                                     className="text-medium" />
                                             </div>
+                                            <div>
+                                                <Checkbox
+                                                    checked={config.backend.bitcoreP2WPKHP2SHActive}
+                                                    id="bitcoreP2WPKHP2SHActive"
+                                                    onChange={this.handleToggleAccount}
+                                                    label={t('settings.accounts.bitcoreP2WPKHP2SH')}
+                                                    className="text-medium" />
+                                                <Checkbox
+                                                    checked={config.backend.bitcoreP2WPKHActive}
+                                                    id="bitcoreP2WPKHActive"
+                                                    onChange={this.handleToggleAccount}
+                                                    label={t('settings.accounts.bitcoreP2WPKH')}
+                                                    className="text-medium" />
+                                                <Checkbox
+                                                    checked={config.backend.bitcoreP2PKHActive}
+                                                    id="bitcoreP2PKHActive"
+                                                    onChange={this.handleToggleAccount}
+                                                    label={t('settings.accounts.bitcoreP2PKH')}
+                                                    className="text-medium" />
+                                            </div>
                                             { debug && (
                                                 <div>
                                                     <Checkbox

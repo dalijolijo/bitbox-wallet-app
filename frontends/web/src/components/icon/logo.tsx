@@ -27,6 +27,8 @@ import ETH from './assets/eth-color.svg';
 import ETH_GREY from './assets/eth-white.svg';
 import LTC from './assets/ltc-color.svg';
 import LTC_GREY from './assets/ltc-white.svg';
+import BTX from './assets/btx-color.svg'; //TODO BTX
+import BTX_GREY from './assets/btx-white.svg'; //TODO BTX
 import ShiftLogo from './assets/shift-cryptosecurity-logo.svg';
 import * as style from './logo.css';
 
@@ -45,6 +47,8 @@ const logoMap = {
     tbtc: [BTC, BTC_GREY],
     ltc: [LTC, LTC_GREY],
     tltc: [LTC, LTC_GREY],
+    btx: [BTX, BTX_GREY],
+    tbtx: [BTX, BTX_GREY],
     eth: [ETH, ETH_GREY],
     teth: [ETH, ETH_GREY],
     reth: [ETH, ETH_GREY],

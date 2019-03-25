@@ -41,12 +41,17 @@ type Backend struct {
 	BitcoinP2WPKHActive      bool `json:"bitcoinP2WPKHActive"`
 	LitecoinP2WPKHP2SHActive bool `json:"litecoinP2WPKHP2SHActive"`
 	LitecoinP2WPKHActive     bool `json:"litecoinP2WPKHActive"`
+	BitcoreP2PKHActive       bool `json:"bitcoreP2PKHActive"`
+        BitcoreP2WPKHP2SHActive  bool `json:"bitcoreP2WPKHP2SHActive"`
+        BitcoreP2WPKHActive      bool `json:"bitcoreP2WPKHActive"`
 	EthereumActive           bool `json:"ethereumActive"`
 
 	BTC  btcCoinConfig `json:"btc"`
 	TBTC btcCoinConfig `json:"tbtc"`
 	LTC  btcCoinConfig `json:"ltc"`
 	TLTC btcCoinConfig `json:"tltc"`
+	BTX  btcCoinConfig `json:"btx"`
+        TBTX btcCoinConfig `json:"tbtx"`
 	ETH  ethCoinConfig `json:"eth"`
 	TETH ethCoinConfig `json:"teth"`
 	RETH ethCoinConfig `json:"reth"`
@@ -65,6 +70,12 @@ func (backend Backend) AccountActive(code string) bool {
 		return backend.LitecoinP2WPKHP2SHActive
 	case "tltc-p2wpkh", "ltc-p2wpkh":
 		return backend.LitecoinP2WPKHActive
+	case "tbtx-p2pkh", "btx-p2pkh":
+                return backend.BitcoreP2PKHActive
+        case "tbtx-p2wpkh-p2sh", "btx-p2wpkh-p2sh":
+                return backend.BitcoreP2WPKHP2SHActive
+        case "tbtx-p2wpkh", "btx-p2wpkh":
+                return backend.BitcoreP2WPKHActive
 	case "eth", "teth", "reth":
 		return backend.EthereumActive
 	default:
@@ -125,6 +136,9 @@ func NewDefaultAppConfig() AppConfig {
 			BitcoinP2WPKHActive:      false,
 			LitecoinP2WPKHP2SHActive: true,
 			LitecoinP2WPKHActive:     false,
+			BitcoreP2PKHActive:       false,
+                        BitcoreP2WPKHP2SHActive:  true,
+                        BitcoreP2WPKHActive:      false,
 			EthereumActive:           true,
 			BTC: btcCoinConfig{
 				ElectrumServers: []*rpc.ServerInfo{
@@ -177,6 +191,34 @@ func NewDefaultAppConfig() AppConfig {
 					},
 					{
 						Server:  "ltc.shamir.shiftcrypto.ch:51004",
+						TLS:     true,
+						PEMCert: shiftRootCA,
+					},
+				},
+			},
+			BTX: CoinConfig{
+				ElectrumServers: []*rpc.ServerInfo{
+					{
+						Server:  "btx.shiftcrypto.ch:443",
+						TLS:     true,
+						PEMCert: shiftRootCA,
+					},
+					{
+						Server:  "btx.shamir.shiftcrypto.ch:443",
+						TLS:     true,
+						PEMCert: shiftRootCA,
+					},
+				},
+			},
+			TBTX: CoinConfig{
+				ElectrumServers: []*rpc.ServerInfo{
+					{
+						Server:  "btx.shiftcrypto.ch:51004",//TODO BTX
+						TLS:     true,
+						PEMCert: shiftRootCA,
+					},
+					{
+						Server:  "btx.shamir.shiftcrypto.ch:51004",//TODO BTX
 						TLS:     true,
 						PEMCert: shiftRootCA,
 					},

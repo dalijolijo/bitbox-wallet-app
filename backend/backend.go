@@ -287,10 +287,14 @@ func (backend *Backend) defaultProdServers(code string) []*rpc.ServerInfo {
 		return backend.config.AppConfig().Backend.BTC.ElectrumServers
 	case coinTBTC:
 		return backend.config.AppConfig().Backend.TBTC.ElectrumServers
+	case coinLTC:
+		return backend.config.AppConfig().Backend.LTC.ElectrumServers
+	case coinTLTC:
+		return backend.config.AppConfig().Backend.TLTC.ElectrumServers
 	case coinBTX:
-                return backend.config.AppConfig().Backend.BTX.ElectrumServers
-        case coinTBTX:
-                return backend.config.AppConfig().Backend.TBTX.ElectrumServers
+		return backend.config.AppConfig().Backend.BTX.ElectrumServers
+	case coinTBTX:
+		return backend.config.AppConfig().Backend.TBTX.ElectrumServers
 	default:
 		panic(errp.Newf("The given code %s is unknown.", code))
 	}
@@ -345,9 +349,9 @@ O3nOxjgSfRAfKWQ2Ny1APKcn6I83P5PFLhtO5I12
 		return []*rpc.ServerInfo{{Server: "dev.shiftcrypto.ch:50004", TLS: true, PEMCert: devShiftCA}}
 	case coinTLTC:
 		return []*rpc.ServerInfo{{Server: "dev.shiftcrypto.ch:51004", TLS: true, PEMCert: devShiftCA}}
-	case coinBTX:
+	case coinBTX: //TODO BTX
                 return []*rpc.ServerInfo{{Server: "dev.shiftcrypto.ch:50005", TLS: true, PEMCert: devShiftCA}}
-        case coinTBTX:
+        case coinTBTX: //TODO BTX
                 return []*rpc.ServerInfo{{Server: "dev.shiftcrypto.ch:51005", TLS: true, PEMCert: devShiftCA}}
 	default:
 		panic(errp.Newf("The given code %s is unknown.", code))
@@ -391,13 +395,13 @@ func (backend *Backend) Coin(code string) (coin.Coin, error) {
 		coin = btc.NewCoin(coinLTC, "LTC", &ltc.MainNetParams, dbFolder, servers,
 			"https://insight.litecore.io/tx/")
 	case coinTBTX:
-servers := backend.defaultElectrumXServers(code)
-               coin = btc.NewCoin(coinTBTX, "TBTX", &btx.TestNet4Params, dbFolder, servers,
-                        "http://insight.bitcore.cc/tx/")
-        case coinBTX:
-                servers := backend.defaultElectrumXServers(code)
-                coin = btc.NewCoin(coinBTX, "BTX", &btx.MainNetParams, dbFolder, servers,
-                        "https://insight.bitcore.cc/tx/")
+		servers := backend.defaultElectrumXServers(code)
+		coin = btc.NewCoin(coinTBTX, "TBTX", &btx.TestNet4Params, dbFolder, servers,
+			"http://insight.bitcore.cc/tx/") //TODO BTX testnet insight
+	case coinBTX:
+		servers := backend.defaultElectrumXServers(code)
+		coin = btc.NewCoin(coinBTX, "BTX", &btx.MainNetParams, dbFolder, servers,
+			"https://insight.bitcore.cc/tx/")
 	case coinETH:
 		coin = eth.NewCoin(code, params.MainnetChainConfig,
 			"https://etherscan.io/tx/", backend.config.AppConfig().Backend.ETH.NodeURL)
@@ -476,8 +480,10 @@ func (backend *Backend) initAccounts() {
 				signing.ScriptTypeP2WPKH)
 
 			TBTX, _ := backend.Coin(coinTBTX)
-				backend.createAndAddAccount(TBTX, "tbtx-p2wpkh-p2sh", "Bitcore Testnet", "m/44'/1'/0'",
+			backend.createAndAddAccount(TBTX, "tbtx-p2wpkh-p2sh", "Bitcore Testnet", "m/49'/1'/0'",
 				signing.ScriptTypeP2WPKHP2SH)
+			backend.createAndAddAccount(TBTC, "tbtx-p2wpkh", "Bitcore Testnet: bech32", "m/84'/1'/0'",
+                                signing.ScriptTypeP2WPKH)
 
 			if backend.arguments.DevMode() {
 				TETH, _ := backend.Coin(coinTETH)
